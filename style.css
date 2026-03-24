@@ -1,0 +1,105 @@
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f7f6; 
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 40px;
+}
+
+
+.login, .catalog, .orders, .adminPanel {
+    background-color: #ffffff;
+    border-radius: 12px; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+    padding: 30px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; 
+}
+
+.catalog:hover, .orders:hover, .adminPanel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-size: 22px;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+
+.login {
+    max-width: 350px;
+    margin: 0 auto 40px auto; 
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+}
+
+.login h2 {
+    text-align: center;
+    border-bottom: none;
+}
+
+.role {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+}
+
+.role:focus {
+    border-color: #3498db;
+}
+
+button {
+    padding: 12px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+.userPanel {
+    max-width: 1000px;
+    margin: 0 auto 40px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 30px; 
+}
+
+.catalog, .orders {
+    min-height: 200px; 
+}
+
+
+.adminPanel {
+    max-width: 1000px;
+    margin: 0 auto;
+    min-height: 200px;
+    border-left: 5px solid #e74c3c; 
+}
+
+@media (max-width: 768px) {
+    .userPanel {
+        grid-template-columns: 1fr; 
+    }
+}
