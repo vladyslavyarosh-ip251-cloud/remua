@@ -1,105 +1,261 @@
 
-body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f4f7f6; 
-    color: #333;
+* {
+    box-sizing: border-box;
     margin: 0;
-    padding: 20px;
+    padding: 0;
 }
 
-h1 {
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #2c3e50, #4ca1af);
+}
+
+.auth-modal {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
     text-align: center;
-    color: #2c3e50;
-    margin-bottom: 40px;
 }
 
-
-.login, .catalog, .orders, .adminPanel {
-    background-color: #ffffff;
-    border-radius: 12px; 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
-    padding: 30px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease; 
+.auth-modal h1 {
+    color: #007bff;
+    margin-bottom: 10px;
+    font-size: 28px;
 }
 
-.catalog:hover, .orders:hover, .adminPanel:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-    margin-top: 0;
-    color: #2c3e50;
-    font-size: 22px;
-    border-bottom: 2px solid #ecf0f1;
-    padding-bottom: 10px;
+.auth-modal h2 {
     margin-bottom: 20px;
+    font-size: 20px;
+    color: #555;
 }
 
-
-.login {
-    max-width: 350px;
-    margin: 0 auto 40px auto; 
+.login-form {
     display: flex;
     flex-direction: column;
-    gap: 15px; 
+    gap: 15px;
 }
 
-.login h2 {
-    text-align: center;
-    border-bottom: none;
-}
-
-.role {
-    padding: 12px;
-    border: 1px solid #ccc;
+input[type="text"],
+input[type="password"],
+select {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
     outline: none;
-    cursor: pointer;
+    transition: border-color 0.3s;
+    width: 100%;
 }
 
-.role:focus {
-    border-color: #3498db;
+input:focus, select:focus {
+    border-color: #007bff;
 }
 
+/* Кнопки */
 button {
     padding: 12px;
-    background-color: #3498db;
-    color: #fff;
     border: none;
     border-radius: 8px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background 0.3s, transform 0.1s;
 }
 
-button:hover {
-    background-color: #2980b9;
+button:active {
+    transform: scale(0.98);
 }
-.userPanel {
-    max-width: 1000px;
-    margin: 0 auto 40px auto;
+
+.auth-modal button {
+    background-color: #007bff;
+    color: white;
+}
+
+.auth-modal button:hover {
+    background-color: #0056b3;
+}
+
+/* Посилання для перемикання */
+.auth-modal p {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.auth-modal a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-modal a:hover {
+    text-decoration: underline;
+}
+
+header {
+    background: #fff;
+    padding: 15px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header h1 {
+    font-size: 22px;
+    color: #2c3e50;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#welcomeText {
+    font-weight: 600;
+    color: #555;
+}
+
+.logout-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background-color: #c82333;
+}
+
+
+main {
+    padding: 30px 5%;
+}
+
+.panel {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.panel h2 {
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f0f2f5;
+    padding-bottom: 10px;
+}
+
+.catalog-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 30px; 
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
 }
 
-.catalog, .orders {
-    min-height: 200px; 
+.service-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #eee;
+    text-align: center;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-
-.adminPanel {
-    max-width: 1000px;
-    margin: 0 auto;
-    min-height: 200px;
-    border-left: 5px solid #e74c3c; 
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border-color: #007bff;
 }
 
-@media (max-width: 768px) {
-    .userPanel {
-        grid-template-columns: 1fr; 
+.service-card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.service-card .price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+.order-btn {
+    background-color: #007bff;
+    color: white;
+    width: 100%;
+}
+
+.order-btn:hover {
+    background-color: #0056b3;
+}
+
+.orders {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px dashed #ddd;
+}
+
+#myOrders {
+    list-style: none;
+    margin-top: 15px;
+}
+
+#myOrders li {
+    background: #e9ecef;
+    margin-bottom: 8px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+}
+
+#myOrders li::before {
+    content: "🛠";
+    margin-right: 10px;
+}
+
+.admin-controls {
+    background: #fff3cd;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 5px solid #ffc107;
+}
+
+/* Ада
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .auth-modal {
+        margin: 20px;
+        padding: 25px;
     }
 }

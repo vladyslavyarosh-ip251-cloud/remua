@@ -1,53 +1,61 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const role = localStorage.getItem('userRole');
+    const name = localStorage.getItem('userName');
 
-let services = [];
+    if (!role) {
+        window.location.href = 'auth.html';
+        return;
+    }
+
+    document.getElementById('welcomeText').textContent = `Вітаємо, ${name}! (${role})`;
+
+    if (role === 'admin') {
+        document.getElementById('adminPanel').style.display = 'block';
+    } else {
+        document.getElementById('userPanel').style.display = 'block';
+        loadCatalog(); 
+    }
+});
 
 
-async function loadServices() {
+async function loadCatalog() {
     try {
+        const response = await fetch('services.json');
+        if (!response.ok) throw new Error('Файл не знайдено');
         
-        const response = await fetch("services.json");
-        
-        
-        if (!response.ok) {
-            throw new Error(`Помилка HTTP: ${response.status}`);
-        }
-
-        
-        services = await response.json();
-        
-      
-        renderCatalog();
-        
+        const services = await response.json();
+        renderCatalog(services);
     } catch (error) {
-        console.error("Сталася помилка під час завантаження послуг:", error);
-        document.getElementById("catalogList").innerHTML = "<p>Не вдалося завантажити каталог послуг.</p>";
+        console.error("Помилка:", error);
+        document.getElementById('catalogList').innerHTML = "<p>Не вдалося завантажити каталог.</p>";
     }
 }
 
-function renderCatalog() {
-    const catalogList = document.getElementById("catalogList");
-    catalogList.innerHTML = ""; // Очищаємо контейнер
 
-    services.forEach(service => {
-        const item = document.createElement("div");
-        item.className = "service-item";
-        
-        item.innerHTML = `
-            <div class="service-info">
-                <h3>${service.name}</h3>
-                <p>Ціна: <strong>${service.price} грн</strong></p>
-            </div>
-            <button class="order-btn" onclick="orderService(${service.id})">Замовити</button>
+function renderCatalog(data) {
+    const container = document.getElementById('catalogList');
+    container.innerHTML = ''; 
+
+    data.forEach(service => {
+        const card = document.createElement('div');
+        card.className = 'service-card';
+        card.innerHTML = `
+            <h3>${service.name}</h3>
+            <p class="price">${service.price} грн</p>
+            <button class="order-btn" onclick="addToCart('${service.name}')">Вибрати</button>
         `;
-        
-        catalogList.appendChild(item);
+        container.appendChild(card);
     });
 }
 
-
-function orderService(id) {
-    alert("Ви обрали послугу №" + id);
+function addToCart(name) {
+    const list = document.getElementById('myOrders');
+    const li = document.createElement('li');
+    li.textContent = name;
+    list.appendChild(li);
 }
 
-
-loadServices();
+function logout() {
+    localStorage.clear();
+    window.location.href = 'auth.html';
+}

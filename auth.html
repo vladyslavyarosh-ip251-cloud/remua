@@ -2,51 +2,39 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RemUa - Авторизація та Реєстрація</title>
+    <title>Авторизація</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <h1>Сервіс ремонтних робіт</h1>
-
-    <div id="loginPanel" class="login">
-        <h2>Вхід</h2>
-        <select id="roleSelect" class="role">
-            <option value="user">Користувач</option>
-            <option value="admin">Адміністратор</option>
-        </select>
-        <button onclick="login()">Увійти</button>
-        <p style="text-align: center; margin-top: 10px;">
-            Немає акаунту? <a href="#" onclick="showRegister()">Зареєструватися</a>
-        </p>
-    </div>
-
-    <div id="registerPanel" class="login" style="display: none;">
-        <h2>Реєстрація</h2>
-        <input type="text" placeholder="Ваше ім'я" style="padding: 12px; border: 1px solid #ccc; border-radius: 8px;">
-        <select id="registerRoleSelect" class="role">
-            <option value="user">Користувач</option>
-            <option value="admin">Адміністратор</option>
-        </select>
-        <button onclick="register()">Створити акаунт</button>
-        <p style="text-align: center; margin-top: 10px;">
-            Вже є акаунт? <a href="#" onclick="showLogin()">Увійти</a>
-        </p>
-    </div>
-
-    <div id="userPanel" class="userPanel" style="display: none;">
-        <div class="catalog">
-            <h2>Каталог ремонтних послуг</h2>
-            <button onclick="logout()" style="background-color: #e74c3c;">Вийти</button>
+<body class="auth-page">
+    <div class="auth-modal">
+        <h1>RemUa</h1>
+        <div id="loginForm">
+            <h2>Вхід</h2>
+            <div class="login-form">
+                <input type="text" id="loginName" placeholder="Логін (ім'я)">
+                <input type="password" id="loginPass" placeholder="Пароль">
+                <select id="loginRole">
+                    <option value="user">Користувач</option>
+                    <option value="admin">Адміністратор</option>
+                </select>
+                <button onclick="handleLogin()">Увійти</button>
+                <p>Немає аккаунту? <a href="#" onclick="toggleAuth()">Зареєструватися</a></p>
+            </div>
         </div>
-        <div class="orders">
-            <h2>Мої заявки</h2>
-        </div>
-    </div>
 
-    <div id="adminPanel" class="adminPanel" style="display: none;">
-        <h2>Адмін панель</h2>
-        <button onclick="logout()" style="background-color: #e74c3c;">Вийти</button>
+        <div id="registerForm" style="display: none;">
+            <h2>Реєстрація</h2>
+            <div class="login-form">
+                <input type="text" id="regName" placeholder="Придумайте логін">
+                <input type="password" id="regPass" placeholder="Придумайте пароль">
+                <select id="regRole">
+                    <option value="user">Користувач</option>
+                    <option value="admin">Адміністратор</option>
+                </select>
+                <button onclick="handleRegister()">Створити аккаунт</button>
+                <p>Вже є аккаунт? <a href="#" onclick="toggleAuth()">Увійти</a></p>
+            </div>
+        </div>
     </div>
 
     <script src="auth.js"></script>

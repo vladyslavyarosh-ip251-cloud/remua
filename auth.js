@@ -1,47 +1,52 @@
-// Перехід до вікна реєстрації
-function showRegister() {
-    document.getElementById("loginPanel").style.display = "none";
-    // Використовуємо flex, бо у твоєму CSS клас .login має display: flex
-    document.getElementById("registerPanel").style.display = "flex"; 
+function toggleAuth() {
+    const loginF = document.getElementById('loginForm');
+    const registerF = document.getElementById('registerForm');
+    loginF.style.display = loginF.style.display === 'none' ? 'block' : 'none';
+    registerF.style.display = registerF.style.display === 'none' ? 'block' : 'none';
 }
 
-// Повернення до вікна входу
-function showLogin() {
-    document.getElementById("registerPanel").style.display = "none";
-    document.getElementById("loginPanel").style.display = "flex";
-}
 
-// Імітація реєстрації
-function register() {
-    alert("Реєстрація пройшла успішно! Тепер ви можете увійти.");
-    showLogin(); // Після "реєстрації" повертаємо користувача на форму входу
-}
+function handleRegister() {
+    const name = document.getElementById('regName').value.trim();
+    const pass = document.getElementById('regPass').value.trim();
+    const role = document.getElementById('regRole').value;
 
-// Існуюча функція для входу
-function login() {
-    const role = document.getElementById("roleSelect").value;
-    const loginPanel = document.getElementById("loginPanel");
-    const userPanel = document.getElementById("userPanel");
-    const adminPanel = document.getElementById("adminPanel");
-
-    loginPanel.style.display = "none";
-
-    if (role === "user") {
-        userPanel.style.display = "grid"; 
-        adminPanel.style.display = "none";
-    } else if (role === "admin") {
-        userPanel.style.display = "none";
-        adminPanel.style.display = "block";
+    if (!name || !pass) {
+        alert("Заповніть усі поля!");
+        return;
     }
+
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+
+    
+    if (users.find(u => u.name === name)) {
+        alert("Користувач з таким ім'ям вже існує!");
+        return;
+    }
+
+  
+    users.push({ name, pass, role });
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert("Реєстрація успішна!");
+    toggleAuth();
 }
 
-// Існуюча функція для виходу
-function logout() {
-    const loginPanel = document.getElementById("loginPanel");
-    const userPanel = document.getElementById("userPanel");
-    const adminPanel = document.getElementById("adminPanel");
+function handleLogin() {
+    const name = document.getElementById('loginName').value.trim();
+    const pass = document.getElementById('loginPass').value.trim();
+    const role = document.getElementById('loginRole').value;
 
-    loginPanel.style.display = "flex";
-    userPanel.style.display = "none";
-    adminPanel.style.display = "none";
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+
+    
+    const user = users.find(u => u.name === name && u.pass === pass && u.role === role);
+
+    if (user) {
+        localStorage.setItem('userRole', user.role);
+        localStorage.setItem('userName', user.name);
+        window.location.href = 'index.html';
+    } else {
+        alert("Невірний логін, пароль або роль!");
+    }
 }
