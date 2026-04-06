@@ -2,31 +2,87 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>RemUa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RemUa - Головна</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Сервіс ремонтних робіт</h1>
-<div id="userPanel" class="userPanel" style="display: none;">
-    <div class="catalog">
-        <h2>Каталог ремонтних послуг</h2>
-        <div id="catalogList" class="catalog-grid">
+    <header>
+        <h1>RemUa</h1>
+        <div class="user-info">
+            <span id="welcomeText">Завантаження...</span>
+            <button class="logout-btn" onclick="logout()">Вийти</button>
         </div>
-    </div>
-    <div class="orders">
-        <h2>Мої заявки</h2>
-        <ul id="myOrders"></ul>
-    </div>
-    <button onclick="logout()">Вийти</button>
-</div>
+    </header>
 
-<div id="adminPanel" class="adminPanel" style="display: none;">
-    <h2>Адмін панель</h2>
-    <div id="adminCatalogList"></div>
-    <button onclick="logout()">Вийти</button>
-</div>
+    <main>
+        
+        <div class="panel admin-controls" id="adminPanel" style="display: none;">
+            <h2>Панель Адміністратора</h2>
+            <p>Тут ви можете керувати каталогом послуг. (Функціонал у розробці)</p>
+        </div>
 
-<script src="script.js"></script>
+        <div class="panel" id="userPanel" style="display: none;">
+            <h2>Каталог послуг</h2>
+            
+            <div class="catalog-controls">
+                <input type="text" id="searchInput" placeholder="Пошук послуги..." oninput="handleControlsChange()">
+                <select id="sortSelect" onchange="handleControlsChange()">
+                    <option value="default">За замовчуванням</option>
+                    <option value="price-asc">Найдешевші</option>
+                    <option value="price-desc">Найдорожчі</option>
+                    <option value="name-asc">За алфавітом (А-Я)</option>
+                </select>
+            </div>
+
+            <div class="catalog-grid" id="catalogList"></div>
+            
+            <div class="pagination" id="paginationControls"></div>
+
+            <div class="orders">
+                <h2>Мої замовлення</h2>
+                <ul id="myOrders"></ul>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="script.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = localStorage.getItem('userRole');
+            const name = localStorage.getItem('userName');
+
+            
+            if (!role || !name) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+          
+            const welcomeText = document.getElementById('welcomeText');
+            if (welcomeText) welcomeText.textContent = `Вітаємо, ${name}! (${role === 'admin' ? 'Адмін' : 'Користувач'})`;
+
+            
+            if (role === 'admin') {
+                document.getElementById('adminPanel').style.display = 'block';
+            } else {
+                document.getElementById('userPanel').style.display = 'block';
+               
+                if (typeof loadCatalog === 'function') {
+                    loadCatalog(); 
+                }
+            }
+        });
+
+        
+        function logout() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userName');
+            window.location.href = 'auth.html';
+        }
+    </script>
 </body>
 </html>
