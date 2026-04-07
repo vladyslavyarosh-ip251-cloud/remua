@@ -1,16 +1,58 @@
+// --- Глобальні змінні ---
 let allServices = []; 
 let myOrders = JSON.parse(localStorage.getItem('myOrders')) || [];
 let currentPage = 1;
 const itemsPerPage = 10;
 
+// --- Ініціалізація при завантаженні сторінки ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Оновлюємо лічильник кошика при завантаженні
+    updateCartCount();
+
+    // Перевірка авторизації
+    const role = localStorage.getItem('userRole');
+    const name = localStorage.getItem('userName');
+
+    if (!role || !name) {
+        window.location.href = 'auth.html';
+        return; // Зупиняємо виконання, якщо не авторизований
+    }
+
+    // Встановлення привітального тексту
+    const welcomeText = document.getElementById('welcomeText');
+    if (welcomeText) {
+        welcomeText.textContent = `Вітаємо, ${name}! (${role === 'admin' ? 'Адмін' : 'Користувач'})`;
+    }
+
+    // Відображення панелей залежно від ролі
+    if (role === 'admin') {
+        const adminPanel = document.getElementById('adminPanel');
+        if (adminPanel) adminPanel.style.display = 'block';
+    } else {
+        const userPanel = document.getElementById('userPanel');
+        if (userPanel) userPanel.style.display = 'block';
+       
+        // Завантажуємо каталог лише для звичайних користувачів
+        loadCatalog(); 
+    }
+});
+
+// --- Функції авторизації ---
+function logout() {
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
+    window.location.href = 'auth.html';
+}
+
+// --- Функції каталогу та кошика ---
 async function loadCatalog() {
     try {
-        const res = await fetch('services.json');
+        const res = await fetch('services.json'); 
         allServices = await res.json();
-        renderOrders(); 
         handleControlsChange();
     } catch {
-        document.getElementById('catalogList').innerHTML = "<p style='color:red;'>Помилка завантаження.</p>";
+        const container = document.getElementById('catalogList');
+        if (container) container.innerHTML = "<p style='color:red;'>Помилка завантаження каталогу.</p>";
     }
 }
 
@@ -20,8 +62,14 @@ function handleControlsChange() {
 }
 
 function updateCatalogView() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const sort = document.getElementById('sortSelect').value;
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    
+    // Якщо елементів немає на сторінці (наприклад, у адміна), припиняємо виконання
+    if (!searchInput || !sortSelect) return;
+
+    const search = searchInput.value.toLowerCase();
+    const sort = sortSelect.value;
     
     let filtered = allServices.filter(s => s.name.toLowerCase().includes(search));
 
@@ -39,14 +87,19 @@ function updateCatalogView() {
 
 function renderCatalog(data) {
     const container = document.getElementById('catalogList');
-    if (!data.length) return container.innerHTML = '<p>Послуг не знайдено.</p>';
+    if (!container) return;
+
+    if (!data.length) {
+        container.innerHTML = '<p>Послуг не знайдено.</p>';
+        return;
+    }
 
     container.innerHTML = data.map(s => `
         <div class="service-card">
             <img src="${s.image}" alt="${s.name}" class="service-image" onerror="this.src='https://placehold.co/300x200'">
             <h3>${s.name}</h3>
             <p class="price">${s.price} грн</p>
-            <button class="order-btn" onclick="addToCart('${s.name}')">Вибрати</button>
+            <button class="order-btn" onclick="addToCart('${s.name}')">Додати в кошик</button>
         </div>
     `).join('');
 }
@@ -56,31 +109,22 @@ function addToCart(name) {
     if (service) {
         myOrders.push(service);
         localStorage.setItem('myOrders', JSON.stringify(myOrders));
-        renderOrders();
-        alert(`Послугу "${name}" додано до замовлень!`);
+        updateCartCount();
+        alert(`Послугу "${name}" додано до кошика!`);
     }
 }
 
-function renderOrders() {
-    const container = document.getElementById('myOrders');
-    if (!myOrders.length) return container.innerHTML = '<li>Список порожній</li>';
-
-    container.innerHTML = myOrders.map((s, index) => `
-        <li>
-            ${s.name} — <b>${s.price} грн</b>
-            <button onclick="removeFromCart(${index})" style="margin-left:auto; background:none; color:red; cursor:pointer; border:none;">✕</button>
-        </li>
-    `).join('');
-}
-
-function removeFromCart(index) {
-    myOrders.splice(index, 1);
-    localStorage.setItem('myOrders', JSON.stringify(myOrders));
-    renderOrders();
+function updateCartCount() {
+    const countEl = document.getElementById('cartCount');
+    if (countEl) {
+        countEl.textContent = myOrders.length;
+    }
 }
 
 function renderPagination(totalPages) {
     const container = document.getElementById('paginationControls');
+    if (!container) return;
+
     container.innerHTML = '';
     if (totalPages <= 1) return;
 
