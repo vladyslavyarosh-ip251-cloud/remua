@@ -46,5 +46,31 @@
     "name": "Укладання ламінату", 
     "price": "1500",
     "image": "img/laminat.jpg"
+  },
+
+ { 
+    "id": 9, 
+    "name": "Поклейка шпалер", 
+    "price": "1800",
+    "image": "img/shpalery.jpg"
+  },
+  { 
+    "id": 10, 
+    "name": "Монтаж натяжних стель", 
+    "price": "3200",
+    "image": "img/steli.jpg"
+  },
+  { 
+    "id": 11, 
+    "name": "Встановлення міжкімнатних дверей", 
+    "price": "1200",
+    "image": "img/dveri.jpg"
+  },
+  { 
+    "id": 12, 
+    "name": "Монтаж теплої підлоги", 
+    "price": "4200",
+    "image": "img/tepla-pidloga.jpg"
   }
+
 ]

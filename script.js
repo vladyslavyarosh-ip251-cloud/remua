@@ -1,7 +1,7 @@
 let allServices = []; 
 let myOrders = JSON.parse(localStorage.getItem('myOrders')) || [];
 let currentPage = 1;
-const itemsPerPage = 4;
+const itemsPerPage = 10;
 
 async function loadCatalog() {
     try {
