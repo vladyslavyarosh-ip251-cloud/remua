@@ -5,19 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RemUa - Головна</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .cart-btn {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .cart-btn:hover {
+            background-color: #e67e22;
+        }
+    </style>
 </head>
 <body>
 
     <header>
-        <h1>RemUa</h1>
+        <a href="index.html" style="text-decoration: none;"><h1>RemUa</h1></a>
         <div class="user-info">
-            <span id="welcomeText">Завантаження...</span>
+            <span id="welcomeText" style="margin-right: 15px;">Завантаження...</span>
+            <button class="cart-btn" onclick="window.location.href='cart.html'">🛒 Кошик (<span id="cartCount">0</span>)</button>
             <button class="logout-btn" onclick="logout()">Вийти</button>
         </div>
     </header>
 
     <main>
-        
         <div class="panel admin-controls" id="adminPanel" style="display: none;">
             <h2>Панель Адміністратора</h2>
             <p>Тут ви можете керувати каталогом послуг. (Функціонал у розробці)</p>
@@ -39,50 +54,11 @@
             <div class="catalog-grid" id="catalogList"></div>
             
             <div class="pagination" id="paginationControls"></div>
-
-            <div class="orders">
-                <h2>Мої замовлення</h2>
-                <ul id="myOrders"></ul>
-            </div>
         </div>
-
     </main>
 
+    <!-- Єдине підключення скрипта -->
     <script src="script.js"></script>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const role = localStorage.getItem('userRole');
-            const name = localStorage.getItem('userName');
-
-            
-            if (!role || !name) {
-                window.location.href = 'auth.html';
-                return;
-            }
-
-          
-            const welcomeText = document.getElementById('welcomeText');
-            if (welcomeText) welcomeText.textContent = `Вітаємо, ${name}! (${role === 'admin' ? 'Адмін' : 'Користувач'})`;
-
-            
-            if (role === 'admin') {
-                document.getElementById('adminPanel').style.display = 'block';
-            } else {
-                document.getElementById('userPanel').style.display = 'block';
-               
-                if (typeof loadCatalog === 'function') {
-                    loadCatalog(); 
-                }
-            }
-        });
-
-        
-        function logout() {
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userName');
-            window.location.href = 'auth.html';
-        }
-    </script>
 </body>
 </html>
