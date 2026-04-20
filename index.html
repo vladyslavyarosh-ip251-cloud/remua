@@ -34,8 +34,28 @@
 
     <main>
         <div class="panel admin-controls" id="adminPanel" style="display: none;">
-            <h2>Панель Адміністратора</h2>
-            <p>Тут ви можете керувати каталогом послуг. (Функціонал у розробці)</p>
+            <h2>Управління каталогом</h2>
+            
+            <div class="admin-form">
+                <input type="hidden" id="editId">
+                <input type="text" id="adminName" placeholder="Назва послуги">
+                <input type="number" id="adminPrice" placeholder="Ціна (грн)">
+                <input type="text" id="adminImage" placeholder="URL картинки (необов'язково)">
+                
+                <button id="adminSaveBtn" onclick="saveService()">Додати послугу</button>
+                <button id="adminCancelBtn" onclick="cancelEdit()" style="display:none; background-color:#6c757d;">Скасувати</button>
+            </div>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Назва</th>
+                        <th>Ціна</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody"></tbody>
+            </table>
         </div>
 
         <div class="panel" id="userPanel" style="display: none;">
@@ -57,8 +77,39 @@
         </div>
     </main>
 
-    <!-- Єдине підключення скрипта -->
     <script src="script.js"></script>
     
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = localStorage.getItem('userRole');
+            const name = localStorage.getItem('userName');
+
+            if (!role || !name) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            document.getElementById('welcomeText').textContent = `Вітаємо, ${name}!`;
+            const myOrders = JSON.parse(localStorage.getItem('myOrders')) || [];
+            document.getElementById('cartCount').textContent = myOrders.length;
+
+            if (role === 'admin') {
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('userPanel').style.display = 'block'; 
+            } else {
+                document.getElementById('userPanel').style.display = 'block';
+            }
+
+            if (typeof loadCatalog === 'function') {
+                loadCatalog(); 
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userName');
+            window.location.href = 'auth.html';
+        }
+    </script>
 </body>
 </html>
