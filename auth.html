@@ -1,45 +1,53 @@
 <!doctype html>
 <html lang="uk">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Авторизація</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body class="auth-page">
-    <div class="auth-modal">
-      <h1>RemUa</h1>
-      <div id="loginForm">
-        <h2>Вхід</h2>
-        <div class="login-form">
-          <input type="text" id="loginName" placeholder="Логін (ім'я)" />
-          <input type="password" id="loginPass" placeholder="Пароль" />
-          <select id="loginRole">
-            <option value="user">Користувач</option>
-            <option value="admin">Адміністратор</option>
-          </select>
-          <button onclick="handleLogin()">Увійти</button>
-          <p>
-            Немає аккаунту?
-            <a href="#" onclick="toggleAuth()">Зареєструватися</a>
-          </p>
-        </div>
-      </div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Авторизація</title>
+<link rel="stylesheet" href="style.css">
+</head>
 
-      <div id="registerForm" style="display: none">
-        <h2>Реєстрація</h2>
+<body class="auth-page">
+
+<div class="auth-modal">
+    <h1>RemUa</h1>
+
+    <!-- Вхід -->
+    <div id="loginForm">
+        <h2>Вхід</h2>
+
         <div class="login-form">
-          <input type="text" id="regName" placeholder="Придумайте логін" />
-          <input type="password" id="regPass" placeholder="Придумайте пароль" />
-          <select id="regRole">
-            <option value="user">Користувач</option>
-            <option value="admin">Адміністратор</option>
-          </select>
-          <button onclick="handleRegister()">Створити аккаунт</button>
-          <p>Вже є аккаунт? <a href="#" onclick="toggleAuth()">Увійти</a></p>
+            <input type="text" id="loginName" placeholder="Логін">
+            <input type="password" id="loginPass" placeholder="Пароль">
+
+            <button onclick="handleLogin()">Увійти</button>
+
+            <p>
+                Немає акаунту?
+                <a href="#" onclick="toggleAuth()">Зареєструватися</a>
+            </p>
         </div>
-      </div>
     </div>
 
-    <script src="auth.js"></script>
-  </body>
+    <!-- Реєстрація -->
+    <div id="registerForm" style="display:none;">
+        <h2>Реєстрація</h2>
+
+        <div class="login-form">
+            <input type="text" id="regName" placeholder="Придумайте логін">
+            <input type="password" id="regPass" placeholder="Придумайте пароль">
+
+            <button onclick="handleRegister()">Створити акаунт</button>
+
+            <p>
+                Вже є акаунт?
+                <a href="#" onclick="toggleAuth()">Увійти</a>
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<script src="auth.js"></script>
+</body>
 </html>

@@ -1,40 +1,48 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
 const supabase = createClient(
   "https://wisuzgckvumcjkntnbkh.supabase.co",
-  "sb_publishable_7bBz4u8RtEst45jyWOds5w_p-D64MNI",
+  "ТВІЙ_ANON_KEY"
 );
-const { data, error } = await supabase.from("services").select();
-console.log(data);
 
-let allServices = data || [];
-console.log(allServices);
+/* ---------------- STATE ---------------- */
+
+let allServices = [];
 let myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
 let currentPage = 1;
 const itemsPerPage = 4;
 
-// async function loadCatalog() {
-// if (!allServices.length) {
-// try {
-// const res = await fetch('services.json');
-// if (res.ok) {
-// const data = await res.json();
-// allServices = data.map((s, i) => ({ id: Date.now() + i, ...s }));
-// localStorage.setItem('services', JSON.stringify(allServices));
-// }
-// } catch (e) {
-// console.warn(e);
-// }
-// }
+/* ---------------- LOAD DATA ---------------- */
 
-// updateCartCount();
-// handleControlsChange();
+async function loadCatalog() {
+  console.log("Loading catalog...");
+ console.log("LOADING CATALOG...");
 
-if (localStorage.getItem('userRole') === 'admin') {
-console.log("Admin mode: rendering admin table");
-renderAdminTable();
+
+
+console.log(data);
+  const { data, error } = await supabase
+    .from("services")
+    .select("*");
+
+  if (error) {
+    console.log("Supabase error:", error);
+    return;
+  }
+
+  console.log("DATA:", data);
+
+  allServices = data || [];
+
+  updateCartCount();
+  updateCatalogView();
+
+  if (localStorage.getItem("userRole") === "admin") {
+    renderAdminTable();
+  }
 }
-// }
+
+/* ---------------- USER CATALOG ---------------- */
 
 function handleControlsChange() {
   currentPage = 1;
@@ -42,75 +50,101 @@ function handleControlsChange() {
 }
 
 function updateCatalogView() {
-  const search = document.getElementById("searchInput").value.toLowerCase();
-  const sort = document.getElementById("sortSelect").value;
+  const search = (document.getElementById("searchInput")?.value || "").toLowerCase();
+  const sort = document.getElementById("sortSelect")?.value || "default";
 
   let filtered = allServices.filter((s) =>
-    s.name.toLowerCase().includes(search),
+    s.name.toLowerCase().includes(search)
   );
 
   if (sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
-  else if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
-  else if (sort === "name-asc")
+  if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
+  if (sort === "name-asc")
     filtered.sort((a, b) => a.name.localeCompare(b.name));
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
-  currentPage = Math.max(1, Math.min(currentPage, totalPages));
+
+  if (currentPage > totalPages) currentPage = totalPages;
 
   const start = (currentPage - 1) * itemsPerPage;
-  renderCatalog(filtered.slice(start, start + itemsPerPage));
+  const pageItems = filtered.slice(start, start + itemsPerPage);
+
+  renderCatalog(pageItems);
   renderPagination(totalPages);
 }
 
 function renderCatalog(data) {
   const container = document.getElementById("catalogList");
-  if (!data.length) return (container.innerHTML = "<p>Послуг не знайдено.</p>");
+  if (!container) return;
+
+  if (!data.length) {
+    container.innerHTML = "<p>Послуг не знайдено.</p>";
+    return;
+  }
 
   container.innerHTML = data
     .map(
       (s) => `
-        <div class="service-card">
-            <img src="${s.image}" alt="${s.name}" class="service-image" onerror="this.src='https://placehold.co/300x200'">
-            <h3>${s.name}</h3>
-            <p class="price">${s.price} грн</p>
-            <button class="order-btn" onclick="addToCart(${s.id})">Вибрати</button>
-        </div>
-    `,
+      <div class="service-card">
+        <img src="${s.image}" 
+             class="service-image"
+             onerror="this.src='https://placehold.co/300x200'">
+
+        <h3>${s.name}</h3>
+        <p class="price">${s.price} грн</p>
+
+        <button onclick="addToCart(${s.id})">
+          Вибрати
+        </button>
+      </div>
+    `
     )
     .join("");
 }
 
+/* ---------------- PAGINATION ---------------- */
+
 function renderPagination(totalPages) {
   const container = document.getElementById("paginationControls");
+  if (!container) return;
+
   container.innerHTML = "";
+
   if (totalPages <= 1) return;
 
   for (let i = 1; i <= totalPages; i++) {
     const btn = document.createElement("button");
-    btn.className = `page-btn ${i === currentPage ? "active" : ""}`;
     btn.textContent = i;
+    btn.className = i === currentPage ? "active" : "";
+
     btn.onclick = () => {
       currentPage = i;
       updateCatalogView();
     };
+
     container.appendChild(btn);
   }
 }
 
+/* ---------------- CART ---------------- */
+
 function addToCart(id) {
-  const service = allServices.find((s) => s.id === id);
-  if (service) {
-    myOrders.push(service);
-    localStorage.setItem("myOrders", JSON.stringify(myOrders));
-    updateCartCount();
-    alert(`Послугу "${service.name}" додано до кошика!`);
-  }
+  const item = allServices.find((s) => s.id === id);
+  if (!item) return;
+
+  myOrders.push(item);
+  localStorage.setItem("myOrders", JSON.stringify(myOrders));
+
+  updateCartCount();
+  alert("Додано в кошик!");
 }
 
 function updateCartCount() {
   const el = document.getElementById("cartCount");
   if (el) el.textContent = myOrders.length;
 }
+
+/* ---------------- ADMIN ---------------- */
 
 function renderAdminTable() {
   const tbody = document.getElementById("adminTableBody");
@@ -119,65 +153,68 @@ function renderAdminTable() {
   tbody.innerHTML = allServices
     .map(
       (s) => `
-        <tr>
-            <td>${s.name}</td>
-            <td>${s.price} грн</td>
-            <td>
-                <button onclick="editService(${s.id})" style="background:#ffc107; color:black;">Ред.</button>
-                <button onclick="deleteService(${s.id})" style="background:#dc3545;">Видалити</button>
-            </td>
-        </tr>
-    `,
+      <tr>
+        <td>${s.name}</td>
+        <td>${s.price} грн</td>
+        <td>
+          <button onclick="editService(${s.id})">Ред.</button>
+          <button onclick="deleteService(${s.id})">Видалити</button>
+        </td>
+      </tr>
+    `
     )
     .join("");
 }
 
-function saveService() {
+async function saveService() {
   const id = document.getElementById("editId").value;
   const name = document.getElementById("adminName").value.trim();
   const price = document.getElementById("adminPrice").value.trim();
   let image = document.getElementById("adminImage").value.trim();
 
-  if (!name || !price) return alert("Вкажіть назву та ціну!");
+  if (!name || !price) {
+    alert("Введіть дані!");
+    return;
+  }
+
   if (!image) image = "https://placehold.co/300x200";
 
   if (id) {
-    const index = allServices.findIndex((s) => s.id === Number(id));
-    if (index !== -1)
-      allServices[index] = {
-        id: Number(id),
-        name,
-        price: Number(price),
-        image,
-      };
+    await supabase
+      .from("services")
+      .update({ name, price: Number(price), image })
+      .eq("id", id);
   } else {
-    allServices.push({ id: Date.now(), name, price: Number(price), image });
+    await supabase
+      .from("services")
+      .insert([{ name, price: Number(price), image }]);
   }
 
-  localStorage.setItem("services", JSON.stringify(allServices));
   cancelEdit();
-  renderAdminTable();
-  updateCatalogView();
+  loadCatalog();
 }
 
-function deleteService(id) {
-  if (!confirm("Ви впевнені, що хочете видалити цю послугу?")) return;
-  allServices = allServices.filter((s) => s.id !== id);
-  localStorage.setItem("services", JSON.stringify(allServices));
-  renderAdminTable();
-  updateCatalogView();
+async function deleteService(id) {
+  if (!confirm("Видалити?")) return;
+
+  await supabase
+    .from("services")
+    .delete()
+    .eq("id", id);
+
+  loadCatalog();
 }
 
 function editService(id) {
-  const service = allServices.find((s) => s.id === id);
-  if (!service) return;
+  const s = allServices.find((x) => x.id === id);
+  if (!s) return;
 
-  document.getElementById("editId").value = service.id;
-  document.getElementById("adminName").value = service.name;
-  document.getElementById("adminPrice").value = service.price;
-  document.getElementById("adminImage").value = service.image;
+  document.getElementById("editId").value = s.id;
+  document.getElementById("adminName").value = s.name;
+  document.getElementById("adminPrice").value = s.price;
+  document.getElementById("adminImage").value = s.image;
 
-  document.getElementById("adminSaveBtn").textContent = "Зберегти зміни";
+  document.getElementById("adminSaveBtn").textContent = "Зберегти";
   document.getElementById("adminCancelBtn").style.display = "inline-block";
 }
 
@@ -187,6 +224,22 @@ function cancelEdit() {
   document.getElementById("adminPrice").value = "";
   document.getElementById("adminImage").value = "";
 
-  document.getElementById("adminSaveBtn").textContent = "Додати послугу";
+  document.getElementById("adminSaveBtn").textContent = "Додати";
   document.getElementById("adminCancelBtn").style.display = "none";
 }
+
+/* ---------------- GLOBAL ACCESS ---------------- */
+
+window.loadCatalog = loadCatalog;
+window.handleControlsChange = handleControlsChange;
+window.addToCart = addToCart;
+window.saveService = saveService;
+window.deleteService = deleteService;
+window.editService = editService;
+window.cancelEdit = cancelEdit;
+
+/* ---------------- START ---------------- */
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadCatalog();
+});
