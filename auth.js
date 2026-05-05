@@ -1,52 +1,81 @@
-function handleLogin() {
-  const name = document.getElementById("loginName").value.trim();
-  const pass = document.getElementById("loginPass").value.trim();
 
-  let users = JSON.parse(localStorage.getItem("users")) || [];
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
-  const user = users.find(
-    (u) => u.name === name && u.pass === pass
-  );
+const SUPABASE_URL = "https://wisuzgckvumcjkntnbkh.supabase.co";
+// Важливо: перевірте цей ключ у налаштуваннях Supabase (Project Settings -> API -> anon public)
+const SUPABASE_KEY = "sb_publishable_7bBz4u8RtEst45jyWOds5w_p-D64MNI"; 
 
-  if (!user) {
-    alert("Невірний логін або пароль!");
-    return;
-  }
 
-  localStorage.setItem("userRole", user.role);
-  localStorage.setItem("userName", user.name);
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  window.location.href = "index.html";
-}
+async function handleLogin() {
+  const email = document.getElementById("loginName").value.trim();
+  const password = document.getElementById("loginPass").value.trim();
 
-function handleRegister() {
-  const name = document.getElementById("regName").value.trim();
-  const pass = document.getElementById("regPass").value.trim();
-
-  if (!name || !pass) {
+  if (!email || !password) {
     alert("Заповніть всі поля!");
     return;
   }
 
-  let users = JSON.parse(localStorage.getItem("users")) || [];
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password,
+  });
 
-  if (users.find(u => u.name === name)) {
-    alert("Користувач вже існує!");
+  if (error) {
+    alert("Помилка входу: " + error.message);
     return;
   }
 
-  users.push({ name, pass, role: "user" });
+  const user = data.user;
+  const role = user.user_metadata.role || "user";
 
-  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("userRole", role);
+  localStorage.setItem("userName", user.email);
 
-  alert("Реєстрація успішна!");
-  toggleAuth();
+  window.location.href = "index.html";
+}
+
+async function handleRegister() {
+  const email = document.getElementById("regName").value.trim();
+  const password = document.getElementById("regPass").value.trim();
+
+  if (!email || !password) {
+    alert("Заповніть всі поля!");
+    return;
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+      data: {
+        role: "user" 
+      }
+    }
+  });
+
+  if (error) {
+    alert("Помилка реєстрації: " + error.message);
+  } else {
+    alert("Реєстрація успішна! Тепер ви можете увійти.");
+    toggleAuth();
+  }
 }
 
 function toggleAuth() {
   const loginF = document.getElementById("loginForm");
   const regF = document.getElementById("registerForm");
 
-  loginF.style.display = loginF.style.display === "none" ? "block" : "none";
-  regF.style.display = regF.style.display === "none" ? "block" : "none";
+  if (loginF.style.display === "none") {
+    loginF.style.display = "block";
+    regF.style.display = "none";
+  } else {
+    loginF.style.display = "none";
+    regF.style.display = "block";
+  }
 }
+
+window.handleLogin = handleLogin;
+window.handleRegister = handleRegister;
+window.toggleAuth = toggleAuth;

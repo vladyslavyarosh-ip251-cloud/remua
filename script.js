@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
 const supabase = createClient(
   "https://wisuzgckvumcjkntnbkh.supabase.co",
-  "ТВІЙ_ANON_KEY"
+  "sb_publishable_7bBz4u8RtEst45jyWOds5w_p-D64MNI"
 );
 
 /* ---------------- STATE ---------------- */
@@ -10,7 +10,7 @@ const supabase = createClient(
 let allServices = [];
 let myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
 let currentPage = 1;
-const itemsPerPage = 4;
+const itemsPerPage = 5;
 
 /* ---------------- LOAD DATA ---------------- */
 
@@ -18,13 +18,11 @@ async function loadCatalog() {
   console.log("Loading catalog...");
  console.log("LOADING CATALOG...");
 
-
-
-console.log(data);
   const { data, error } = await supabase
     .from("services")
-    .select("*");
+    .select();
 
+    console.log(data);
   if (error) {
     console.log("Supabase error:", error);
     return;
