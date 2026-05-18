@@ -1,71 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RemUa - Кошик</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .back-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-        .back-btn:hover { background-color: #2980b9; }
-        
-        .cart-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .cart-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-            background-color: #fff;
-            margin-bottom: 5px;
-            border-radius: 5px;
-        }
-        .remove-btn {
-            background: none;
-            color: red;
-            cursor: pointer;
-            border: none;
-            font-size: 20px;
-            font-weight: bold;
-        }
-        .remove-btn:hover { color: darkred; }
-        .total-price {
-            text-align: right;
-            margin-top: 20px;
-            font-size: 1.2em;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кошик - RemUa</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .cart-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    border-radius: 12px;
+  }
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .cart-item:last-child {
+    border-bottom: none;
+  }
+  .cart-item-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .cart-item-img {
+    width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  .remove-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .remove-btn:hover { background: #c0392b; }
+  .cart-summary {
+    margin-top: 20px;
+    text-align: right;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .checkout-btn {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 15px;
+    width: 100%;
+    transition: 0.3s;
+  }
+  .checkout-btn:hover { background: #2ecc71; }
+  .empty-cart { text-align: center; padding: 40px; font-size: 18px; color: #7f8c8d; }
+  .history-item {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  .history-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
 </head>
 <body>
 
-    <header>
-        <a href="index.html" style="text-decoration: none;"><h1>RemUa - Кошик</h1></a>
-        <div class="user-info">
-            <button class="back-btn" onclick="window.location.href='index.html'">⬅ Назад у каталог</button>
-            <button class="logout-btn" onclick="logout()">Вийти</button>
-        </div>
-    </header>
+<header>
+  <div>
+    <a href="index.html" style="text-decoration:none;color:inherit;">
+      <h1>RemUa</h1>
+    </a>
+    <div class="nav-links" style="margin-top: 10px;">
+      <a href="index.html" style="color: white; text-decoration: none; margin-right: 15px; font-weight: bold;">🏠 Головна</a>
+      <a href="contacts.html" style="color: white; text-decoration: none; margin-right: 15px; font-weight: bold;">📞 Контакти</a>
+    </div>
+  </div>
 
-    <main>
-        <div class="panel">
-            <h2>Мої замовлення</h2>
-            <ul id="myOrdersPage" class="cart-list"></ul>
-            <div id="totalContainer" class="total-price"></div>
-        </div>
-    </main>
+  <div class="user-info">
+    <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">🌙</button>
+    <span id="welcomeText" style="margin-right:15px;">Завантаження...</span>
+    <button class="logout-btn" onclick="logout()">Вийти</button>
+  </div>
+</header>
 
-    <script src="cart.js"></script>
+<main>
+  <div class="panel cart-container">
+    <h2>Мій кошик</h2>
+    <div id="cartContent">
+      </div>
+  </div>
+
+  <div class="panel cart-container" style="margin-top: 40px;">
+    <h2>Історія замовлень</h2>
+    <div id="historyContent">
+      </div>
+  </div>
+</main>
+
+<script type="module" src="cart.js"></script>
+
 </body>
 </html>

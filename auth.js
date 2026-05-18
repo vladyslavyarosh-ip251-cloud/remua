@@ -1,52 +1,97 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
+// Ініціалізуємо Supabase один раз тут і додаємо export
+export const supabase = createClient(
+  "https://wisuzgckvumcjkntnbkh.supabase.co",
+  "sb_publishable_7bBz4u8RtEst45jyWOds5w_p-D64MNI"
+);
+
+// Логіка Входу
+async function handleLogin() {
+  const email = document.getElementById("loginName")?.value.trim();
+  const password = document.getElementById("loginPass")?.value.trim();
+
+  if (!email || !password) {
+    alert("Заповніть всі поля!");
+    return;
+  }
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password,
+  });
+
+  if (error) {
+    alert("Помилка входу: " + error.message);
+    return;
+  }
+
+  const user = data.user;
+  const role = user.user_metadata.role || "user";
+
+  // Зберігаємо дані в пам'ять браузера
+  localStorage.setItem("userRole", role);
+  localStorage.setItem("userName", user.email);
+
+  // Перенаправляємо на головну сторінку
+  window.location.href = "index.html";
+}
+
+// Логіка Реєстрації
+async function handleRegister() {
+  const email = document.getElementById("regName")?.value.trim();
+  const password = document.getElementById("regPass")?.value.trim();
+
+  if (!email || !password) {
+    alert("Заповніть всі поля!");
+    return;
+  }
+
+  if (password.length < 6) {
+    alert("Пароль має містити мінімум 6 символів!");
+    return;
+  }
+
+  let assignedRole = "user";
+  if (email.toLowerCase() === "admin@example.com") {
+    assignedRole = "admin";
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+      data: {
+        role: assignedRole
+      }
+    }
+  });
+
+  if (error) {
+    alert("Помилка реєстрації: " + error.message);
+  } else {
+    alert(`Реєстрація успішна! Роль визначено як: ${assignedRole}`);
+    toggleAuth(); // Перемикаємо на вікно входу
+  }
+}
+
+// Перемикання між вікнами Вхід / Реєстрація
 function toggleAuth() {
-    const loginF = document.getElementById('loginForm');
-    const registerF = document.getElementById('registerForm');
-    loginF.style.display = loginF.style.display === 'none' ? 'block' : 'none';
-    registerF.style.display = registerF.style.display === 'none' ? 'block' : 'none';
+  const loginF = document.getElementById("loginForm");
+  const regF = document.getElementById("registerForm");
+
+  if (!loginF || !regF) return;
+
+  if (loginF.style.display === "none") {
+    loginF.style.display = "block";
+    regF.style.display = "none";
+  } else {
+    loginF.style.display = "none";
+    regF.style.display = "block";
+  }
 }
 
-
-function handleRegister() {
-    const name = document.getElementById('regName').value.trim();
-    const pass = document.getElementById('regPass').value.trim();
-    const role = document.getElementById('regRole').value;
-
-    if (!name || !pass) {
-        alert("Заповніть усі поля!");
-        return;
-    }
-
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-
-    
-    if (users.find(u => u.name === name)) {
-        alert("Користувач з таким ім'ям вже існує!");
-        return;
-    }
-
-  
-    users.push({ name, pass, role });
-    localStorage.setItem('users', JSON.stringify(users));
-
-    alert("Реєстрація успішна!");
-    toggleAuth();
-}
-
-function handleLogin() {
-    const name = document.getElementById('loginName').value.trim();
-    const pass = document.getElementById('loginPass').value.trim();
-    const role = document.getElementById('loginRole').value;
-
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-
-    
-    const user = users.find(u => u.name === name && u.pass === pass && u.role === role);
-
-    if (user) {
-        localStorage.setItem('userRole', user.role);
-        localStorage.setItem('userName', user.name);
-        window.location.href = 'index.html';
-    } else {
-        alert("Невірний логін, пароль або роль!");
-    }
-}
+// Зробимо функції доступними для інлайн-кнопок onclick в HTML
+window.handleLogin = handleLogin;
+window.handleRegister = handleRegister;
+window.toggleAuth = toggleAuth;
