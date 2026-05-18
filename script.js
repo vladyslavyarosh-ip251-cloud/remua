@@ -1,34 +1,20 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js";
-
-const supabase = createClient(
-  "https://wisuzgckvumcjkntnbkh.supabase.co",
-  "sb_publishable_7bBz4u8RtEst45jyWOds5w_p-D64MNI"
-);
-
-/* ---------------- STATE ---------------- */
+import { supabase } from "./auth.js";
 
 let allServices = [];
+let allMessages = [];
 let myOrders = JSON.parse(localStorage.getItem("myOrders")) || [];
 let currentPage = 1;
 const itemsPerPage = 5;
 
-/* ---------------- LOAD DATA ---------------- */
-
 async function loadCatalog() {
-  console.log("Loading catalog...");
- console.log("LOADING CATALOG...");
-
   const { data, error } = await supabase
     .from("services")
     .select();
 
-    console.log(data);
   if (error) {
     console.log("Supabase error:", error);
     return;
   }
-
-  console.log("DATA:", data);
 
   allServices = data || [];
 
@@ -37,10 +23,9 @@ async function loadCatalog() {
 
   if (localStorage.getItem("userRole") === "admin") {
     renderAdminTable();
+    loadMessages();
   }
 }
-
-/* ---------------- USER CATALOG ---------------- */
 
 function handleControlsChange() {
   currentPage = 1;
@@ -57,8 +42,7 @@ function updateCatalogView() {
 
   if (sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
   if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
-  if (sort === "name-asc")
-    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  if (sort === "name-asc") filtered.sort((a, b) => a.name.localeCompare(b.name));
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
 
@@ -83,7 +67,7 @@ function renderCatalog(data) {
   container.innerHTML = data
     .map(
       (s) => `
-      <div class="service-card">
+      <div class="service-card" onclick="window.location.href='service.html?id=${s.id}'" style="cursor: pointer;">
         <img src="${s.image}" 
              class="service-image"
              onerror="this.src='https://placehold.co/300x200'">
@@ -91,7 +75,7 @@ function renderCatalog(data) {
         <h3>${s.name}</h3>
         <p class="price">${s.price} грн</p>
 
-        <button onclick="addToCart(${s.id})">
+        <button onclick="event.stopPropagation(); addToCart(${s.id})">
           Вибрати
         </button>
       </div>
@@ -99,8 +83,6 @@ function renderCatalog(data) {
     )
     .join("");
 }
-
-/* ---------------- PAGINATION ---------------- */
 
 function renderPagination(totalPages) {
   const container = document.getElementById("paginationControls");
@@ -124,8 +106,6 @@ function renderPagination(totalPages) {
   }
 }
 
-/* ---------------- CART ---------------- */
-
 function addToCart(id) {
   const item = allServices.find((s) => s.id === id);
   if (!item) return;
@@ -141,8 +121,6 @@ function updateCartCount() {
   const el = document.getElementById("cartCount");
   if (el) el.textContent = myOrders.length;
 }
-
-/* ---------------- ADMIN ---------------- */
 
 function renderAdminTable() {
   const tbody = document.getElementById("adminTableBody");
@@ -169,6 +147,7 @@ async function saveService() {
   const name = document.getElementById("adminName").value.trim();
   const price = document.getElementById("adminPrice").value.trim();
   let image = document.getElementById("adminImage").value.trim();
+  let desc = document.getElementById("adminDesc").value.trim();
 
   if (!name || !price) {
     alert("Введіть дані!");
@@ -180,12 +159,12 @@ async function saveService() {
   if (id) {
     await supabase
       .from("services")
-      .update({ name, price: Number(price), image })
+      .update({ name, price: Number(price), image, description: desc })
       .eq("id", id);
   } else {
     await supabase
       .from("services")
-      .insert([{ name, price: Number(price), image }]);
+      .insert([{ name, price: Number(price), image, description: desc }]);
   }
 
   cancelEdit();
@@ -211,6 +190,7 @@ function editService(id) {
   document.getElementById("adminName").value = s.name;
   document.getElementById("adminPrice").value = s.price;
   document.getElementById("adminImage").value = s.image;
+  document.getElementById("adminDesc").value = s.description || "";
 
   document.getElementById("adminSaveBtn").textContent = "Зберегти";
   document.getElementById("adminCancelBtn").style.display = "inline-block";
@@ -221,12 +201,71 @@ function cancelEdit() {
   document.getElementById("adminName").value = "";
   document.getElementById("adminPrice").value = "";
   document.getElementById("adminImage").value = "";
+  document.getElementById("adminDesc").value = "";
 
   document.getElementById("adminSaveBtn").textContent = "Додати";
   document.getElementById("adminCancelBtn").style.display = "none";
 }
 
-/* ---------------- GLOBAL ACCESS ---------------- */
+async function loadMessages() {
+  const { data, error } = await supabase
+    .from("messages")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.log("Помилка завантаження повідомлень:", error);
+    return;
+  }
+
+  allMessages = data || [];
+  renderMessages();
+}
+
+function renderMessages() {
+  const tbody = document.getElementById("adminMessagesBody");
+  if (!tbody) return;
+
+  if (!allMessages.length) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Немає нових повідомлень</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = allMessages
+    .map(
+      (m) => {
+        const date = new Date(m.created_at).toLocaleDateString("uk-UA", { 
+          day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
+        });
+
+        return `
+        <tr>
+          <td style="font-size: 14px; color: #7f8c8d;">${date}</td>
+          <td>
+            <strong>${m.name}</strong><br>
+            <a href="mailto:${m.email}" style="color: #3498db; font-size: 14px;">${m.email}</a>
+          </td>
+          <td style="max-width: 300px; white-space: pre-wrap;">${m.message}</td>
+          <td>
+            <button onclick="deleteMessage(${m.id})" style="background: #e74c3c; padding: 5px 10px; color: white; border: none; border-radius: 4px; cursor: pointer;">Видалити</button>
+          </td>
+        </tr>
+        `;
+      }
+    )
+    .join("");
+}
+
+async function deleteMessage(id) {
+  if (!confirm("Видалити цей запит?")) return;
+
+  await supabase
+    .from("messages")
+    .delete()
+    .eq("id", id);
+
+  loadMessages();
+}
 
 window.loadCatalog = loadCatalog;
 window.handleControlsChange = handleControlsChange;
@@ -235,8 +274,7 @@ window.saveService = saveService;
 window.deleteService = deleteService;
 window.editService = editService;
 window.cancelEdit = cancelEdit;
-
-/* ---------------- START ---------------- */
+window.deleteMessage = deleteMessage;
 
 window.addEventListener("DOMContentLoaded", () => {
   loadCatalog();

@@ -1,8 +1,68 @@
+/* ================= ТЕМИ ОФОРМЛЕННЯ ================= */
+
+/* Світла тема (за замовчуванням) */
+:root {
+  --bg-color: #f4f7f6;
+  --text-color: #333;
+  --panel-bg: #ffffff;
+  --header-bg: #2c3e50;
+  --border-color: #ccc;
+}
+
+/* Темна тема (вмикається, коли у body є клас .dark) */
+body.dark {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --panel-bg: #1e1e1e;
+  --header-bg: #000000;
+  --border-color: #444;
+}
+
+/* Застосовуємо змінні до елементів сайту */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Плавна зміна кольору */
+}
+
+header {
+  background-color: var(--header-bg);
+}
+
+.panel, .contacts-container, .service-card, .login, .admin-form {
+  background-color: var(--panel-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease;
+}
+
+input, select, textarea {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+/* Стиль кнопки перемикача тем */
+.theme-toggle-btn {
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  font-size: 16px;
+}
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -205,7 +265,7 @@ main {
 .service-card .price {
   font-size: 22px;
   font-weight: 800;
-  color: #28a745;
+  color: #e01616;
   margin-bottom: 15px;
   margin-top: auto;
 }

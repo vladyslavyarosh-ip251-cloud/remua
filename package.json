@@ -1,13 +1,31 @@
 {
+  "name": "remua",
+  "version": "1.0.0",
+  "description": "-Дизайн -Сортування,фільтрування,пагінація",
+  "main": "auth.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "write": "prettier --write ."
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.0"
   },
   "devDependencies": {
     "prettier": "^3.8.3",
-    "vite": "^8.0.9"
+    "vite": "^8.0.13"
   },
-  "scripts": {
-    "dev": "vite",
-    "write": "prettier --write ."
-  }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vladyslavyarosh-ip251-cloud/remua.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vladyslavyarosh-ip251-cloud/remua/issues"
+  },
+  "homepage": "https://github.com/vladyslavyarosh-ip251-cloud/remua#readme"
 }

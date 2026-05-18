@@ -21,72 +21,65 @@
   background:#e67e22;
 }
 </style>
-
 </head>
 <body>
 
 <header>
-  <a href="index.html" style="text-decoration:none;color:inherit;">
-    <h1>RemUa</h1>
-  </a>
+  <div>
+    <a href="index.html" style="text-decoration:none;color:inherit;">
+      <h1>RemUa</h1>
+    </a>
+    <div class="nav-links" style="margin-top: 10px;">
+      <a href="index.html" style="color: #f39c12; text-decoration: none; margin-right: 15px; font-weight: bold;">🏠 Головна</a>
+      <a href="contacts.html" style="color: white; text-decoration: none; margin-right: 15px; font-weight: bold;">📞 Контакти</a>
+    </div>
+  </div>
 
   <div class="user-info">
-    <span id="welcomeText" style="margin-right:15px;">
-      Завантаження...
-    </span>
+    <button id="themeBtn" class="theme-toggle-btn" onclick="toggleTheme()">🌙</button>
 
-    <button class="cart-btn"
-      onclick="window.location.href='cart.html'">
+    <span id="welcomeText" style="margin-right:15px;">Завантаження...</span>
+
+    <button class="cart-btn" onclick="window.location.href='cart.html'">
       🛒 Кошик (<span id="cartCount">0</span>)
     </button>
 
-    <button class="logout-btn" onclick="logout()">
-      Вийти
-    </button>
+    <button class="logout-btn" onclick="logout()">Вийти</button>
   </div>
 </header>
 
 <main>
 
-  <!-- ADMIN -->
-  <div class="panel admin-controls"
-       id="adminPanel"
-       style="display:none;">
-
+  <div class="panel admin-controls" id="adminPanel" style="display:none;">
     <h2>Управління каталогом</h2>
 
     <div class="admin-form">
+  <input type="hidden" id="editId">
+  <input type="text" id="adminName" placeholder="Назва послуги">
+  <input type="number" id="adminPrice" placeholder="Ціна">
+  <input type="text" id="adminImage" placeholder="URL картинки">
+  
+  <textarea id="adminDesc" placeholder="Опис послуги" rows="3" style="width: 100%; margin-bottom: 12px; padding: 10px; border-radius: 6px;"></textarea>
 
-      <input type="hidden" id="editId">
-
-      <input
-        type="text"
-        id="adminName"
-        placeholder="Назва послуги">
-
-      <input
-        type="number"
-        id="adminPrice"
-        placeholder="Ціна">
-
-      <input
-        type="text"
-        id="adminImage"
-        placeholder="URL картинки">
-
-      <button id="adminSaveBtn"
-        onclick="saveService()">
-        Додати послугу
-      </button>
-
-      <button
-        id="adminCancelBtn"
-        onclick="cancelEdit()"
-        style="display:none;background:#6c757d;">
-        Скасувати
-      </button>
-
-    </div>
+  <button id="adminSaveBtn" onclick="saveService()">Додати послугу</button>
+  <button id="adminCancelBtn" onclick="cancelEdit()" style="display:none;background:#6c757d;">Скасувати</button>
+  <hr style="margin: 40px 0 20px 0; border-color: var(--border-color);">
+    <h2>Запити від клієнтів (Зворотний зв'язок)</h2>
+    
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Клієнт</th>
+          <th>Повідомлення</th>
+          <th>Дії</th>
+        </tr>
+      </thead>
+      <tbody id="adminMessagesBody">
+        <tr><td colspan="4" style="text-align: center;">Завантаження...</td></tr>
+      </tbody>
+    </table>
+</div>
 
     <table class="admin-table">
       <thead>
@@ -96,65 +89,38 @@
           <th>Дії</th>
         </tr>
       </thead>
-
       <tbody id="adminTableBody"></tbody>
     </table>
-
   </div>
 
-  <!-- USER -->
   <div class="panel" id="userPanel" style="display:none;">
-
     <h2>Каталог послуг</h2>
 
     <div class="catalog-controls">
+      <input type="text" id="searchInput" placeholder="Пошук..." oninput="handleControlsChange()">
 
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Пошук..."
-        oninput="handleControlsChange()">
-
-      <select
-        id="sortSelect"
-        onchange="handleControlsChange()">
-
-        <option value="default">
-          За замовчуванням
-        </option>
-
-        <option value="price-asc">
-          Найдешевші
-        </option>
-
-        <option value="price-desc">
-          Найдорожчі
-        </option>
-
-        <option value="name-asc">
-          За алфавітом
-        </option>
-
+      <select id="sortSelect" onchange="handleControlsChange()">
+        <option value="default">За замовчуванням</option>
+        <option value="price-asc">Найдешевші</option>
+        <option value="price-desc">Найдорожчі</option>
+        <option value="name-asc">За алфавітом</option>
       </select>
-
     </div>
 
     <div class="catalog-grid" id="catalogList"></div>
-
-    <div class="pagination"
-         id="paginationControls"></div>
-
+    <div class="pagination" id="paginationControls"></div>
   </div>
 
 </main>
 
-<!-- MODULE -->
 <script type="module" src="script.js"></script>
 
-<!-- PAGE LOGIC -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  // 1. Ініціалізація теми з пам'яті браузера
+  initTheme();
 
+  // 2. Перевірка авторизації
   const role = localStorage.getItem("userRole");
   const name = localStorage.getItem("userName");
 
@@ -163,24 +129,51 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  document.getElementById("welcomeText").textContent =
-    "Вітаємо, " + name + "!";
+  document.getElementById("welcomeText").textContent = "Вітаємо, " + name + "!";
+
+  // 3. Розподіл інтерфейсу (Адмін / Юзер)
+  const adminPanel = document.getElementById("adminPanel");
+  const userPanel = document.getElementById("userPanel");
 
   if (role === "admin") {
-    document.getElementById("adminPanel").style.display = "block";
+    if (adminPanel) adminPanel.style.display = "block";
+    if (userPanel) userPanel.style.display = "none";
+  } else {
+    if (adminPanel) adminPanel.style.display = "none";
+    if (userPanel) userPanel.style.display = "block";
   }
-
-  document.getElementById("userPanel").style.display = "block";
-
 });
 
-function logout() {
-  localStorage.removeItem("userRole");
-  localStorage.removeItem("userName");
-  localStorage.removeItem("myOrders");
+/* --- ЛОГІКА ТЕМИ СТОРІНКИ --- */
+function toggleTheme() {
+  const isDark = document.body.classList.toggle("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  updateThemeButton(isDark);
+}
 
+function updateThemeButton(isDark) {
+  const btn = document.getElementById("themeBtn");
+  if (btn) btn.textContent = isDark ? "☀️" : "🌙";
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem("theme");
+  const isDark = savedTheme === "dark";
+  if (isDark) {
+    document.body.classList.add("dark");
+  }
+  updateThemeButton(isDark);
+}
+
+// Вихід
+function logout() {
+  localStorage.clear();
   window.location.href = "auth.html";
 }
+
+// Реєструємо функції глобально
+window.toggleTheme = toggleTheme;
+window.logout = logout;
 </script>
 
 </body>
