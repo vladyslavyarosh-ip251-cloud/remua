@@ -9,8 +9,12 @@ export default defineConfig({
         contacts: resolve(__dirname, 'contacts.html'),
         service: resolve(__dirname, 'service.html'),
         auth: resolve(__dirname, 'auth.html'),
-        cart: resolve(__dirname, 'cart.html') 
+        cart: resolve(__dirname, 'cart.html')
       }
     }
+  },
+  test: {
+    environment: 'jsdom', 
+    globals: true          
   }
 });
