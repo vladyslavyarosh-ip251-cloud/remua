@@ -8,14 +8,18 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "write": "prettier --write ."
+    "write": "prettier --write .",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.0"
   },
   "devDependencies": {
+    "jsdom": "^26.0.0",
     "prettier": "^3.8.3",
-    "vite": "^8.0.13"
+    "vite": "^8.0.13",
+    "vitest": "^3.0.0"
   },
   "repository": {
     "type": "git",
